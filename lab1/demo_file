@@ -1,0 +1,47 @@
+
+
+
+node{
+    stage ("git checkout"){
+        git 'https://github.com/amitnaikd19/Docker_project.git'
+    }
+    stage ("send docker file to ansible server"){
+        sshagent(['ansible_demo']){
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168'
+            sh 'rsync -avzh /var/lib/jenkins/workspace/demo/* root@172.31.2.168:/u01/data/'
+        }
+    }
+    stage ("build docker img from docker file"){
+        sshagent(['ansible_demo']){
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 cd /u01/data/'
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 docker image build -t $JOB_NAME:V1.$BUILD_ID /u01/data '
+    }
+    }
+    stage ("Tag docker image"){
+        sshagent(['ansible_demo']){
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 docker image tag $JOB_NAME:V1.$BUILD_ID amitnaikd19/$JOB_NAME:V1.$BUILD_ID'
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 docker image tag $JOB_NAME:V1.$BUILD_ID amitnaikd19/$JOB_NAME:latest'
+        }
+    }
+    stage ("Push image to hub"){
+        withCredentials([string(credentialsId: 'dockerhubpass', variable: 'dockerhubpass')]) {
+        sshagent(['ansible_demo']){
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 docker login -u amitnaikd19 -p ${dockerhubpass}'
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 docker image push amitnaikd19/$JOB_NAME:V1.$BUILD_ID'
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 docker image push amitnaikd19/$JOB_NAME:latest'
+            }
+        }
+    }
+    stage ("Delete docker file from ansible server "){
+        sshagent(['ansible_demo']){
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 docker image rmi amitnaikd19/$JOB_NAME:V1.$BUILD_ID amitnaikd19/$JOB_NAME:latest $JOB_NAME:V1.$BUILD_ID'
+        }
+    }
+    stage ('Build docker container on Docker server'){
+        withCredentials([string(credentialsId: 'dockerhubpass', variable: 'dockerhubpass')]) {
+        sshagent(['ansible_demo']){
+            sh 'ssh -o StrictHostKeyChecking=no root@172.31.2.168 ansible-playbook -e "dockerhub_password=${dockerhubpass}" /u01/job_a.yml -i /u01/data/host'
+        }
+       }
+    }
+}
