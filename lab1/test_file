@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         RELEASE='10.01'
-        LOG_LEVEL='GLOBAL_ENV'
+        
     }
     stages {
         stage('Build')
