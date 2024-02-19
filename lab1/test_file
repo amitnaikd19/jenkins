@@ -5,7 +5,7 @@ pipeline {
         
     }
     stages {
-    stage('Build')
+    stage('Build') {
         agent any 
         environment {
             LOG_LEVEL='INFO'
@@ -13,12 +13,13 @@ pipeline {
         steps {
             echo "Building release ${RELEASE} with log level ${LOG_LEVEL}"
             }
+    }
         
     stage ('Test'){
             echo "Testing release ${RELEASE} with log level"
             }
         
-        stage ('Deploy') {
+    stage ('Deploy') {
             // Provide input block which will prompt to take input from user manually.
             input {
                 message 'Deploy?'
