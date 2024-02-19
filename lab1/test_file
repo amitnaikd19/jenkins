@@ -13,7 +13,7 @@ pipeline {
             }
         
         stage ('Test'){
-            echo "Testing release ${RELEASE}" with log level ${LOG_LEVEL}"
+            echo "Testing release ${RELEASE}" with log level}"
             }
         
         stage ('Deploy') {
