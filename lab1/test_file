@@ -12,13 +12,13 @@ pipeline {
                 LOG_LEVEL='INFO'
             }
             steps {
-                echo "Building release ${RELEASE} with log level ${LOG_INFO} .. "
+                echo "Building release ${RELEASE} with log level ${LOG_LEVEL} .. "
             }
         }
         stage ('Test') {
             agent any 
             steps {
-                echo "Testing. I can see release ${RELEASE} and log level is ${LOG_INFO}"
+                echo "Testing. I can see release ${RELEASE} and log level is ${LOG_LEVEL}"
             }
         }
 
