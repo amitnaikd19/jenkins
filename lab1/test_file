@@ -5,17 +5,17 @@ pipeline {
         
     }
     stages {
-        stage('Build')
+    stage('Build')
         agent any 
         environment {
-            LOG_LEVEL='LOG_INFO'
+            LOG_LEVEL='INFO'
         }
         steps {
             echo "Building release ${RELEASE} with log level ${LOG_LEVEL}"
             }
         
-        stage ('Test'){
-            echo "Testing release ${RELEASE}" with log level"
+    stage ('Test'){
+            echo "Testing release ${RELEASE} with log level"
             }
         
         stage ('Deploy') {
@@ -35,3 +35,4 @@ pipeline {
 
     }
 }
+        
