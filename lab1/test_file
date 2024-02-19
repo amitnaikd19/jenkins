@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    environment {
+        RELEASE='0.01'
+    }   
+
+    stages{
+
+        stage('Build'){
+            agent any
+            environment {
+                LOG_LEVEL='INFO'
+            }
+            steps {
+                echo "Building release ${RELEASE} with log level ${LOG_INFO} .. "
+            }
+        }
+        stage ('Test') {
+            agent any 
+            steps {
+                echo "Testing. I can see release ${RELEASE} and log level is ${LOG_INFO}"
+            }
+        }
+
+    }
+}
