@@ -16,8 +16,11 @@ pipeline {
     }
         
     stage ('Test'){
+
+        steps{
             echo "Testing release ${RELEASE} with log level"
             }
+    }
         
     stage ('Deploy') {
             // Provide input block which will prompt to take input from user manually.
