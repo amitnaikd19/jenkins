@@ -1,25 +1,34 @@
 pipeline {
     agent any
     environment {
-        RELEASE='0.01'
-    }   
+        RELEASE='10.01'
+        LOG_LEVEL='GLOBAL_ENV'
+    }
+    stages {
+        stage('Build')
+        agent any 
+        environment {LOG_LEVEL='LOG_INFO'}
+        steps {
+            echo "Building release ${RELEASE} with log level ${LOG_LEVEL}"
+            }
+        
+        stage ('Test'){
+            echo "Testing release ${RELEASE}" with log level ${LOG_LEVEL}"
+            }
+        
+        stage ('Deploy') {
+            // Provide input block which will prompt to take input from user manually.
+            input {
+                message 'Deploy?'
+                ok 'Do it !'
+                parameters {
+                    string (name: 'TARGET_ENVIRONMENT', defaultValue: 'PROD', description: 'Target environment deployment')
+                    }
+                }
+            steps{
+                echo "Deploying relase ${RELEASE}, to target environment ${TARGET_ENVIRONMENT}."
+            }
 
-    stages{
-
-        stage('Build'){
-            agent any
-            environment {
-                LOG_LEVEL='INFO'
-            }
-            steps {
-                echo "Building release ${RELEASE} with log level ${LOG_LEVEL} .. "
-            }
-        }
-        stage ('Test') {
-            agent any 
-            steps {
-                echo "Testing. I can see release ${RELEASE} and log level is ${LOG_LEVEL}"
-            }
         }
 
     }
