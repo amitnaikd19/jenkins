@@ -2,42 +2,42 @@ pipeline {
     agent any
     environment {
         RELEASE='10.01'
-        
-    }
-    stages {
-    stage('Build') {
-        agent any 
-        environment {
-            LOG_LEVEL='INFO'
-        }
-        steps {
-            echo "Building release ${RELEASE} with log level ${LOG_LEVEL}"
             }
-    }
-        
-    stage ('Test'){
+    stages{
 
-        steps{
-            echo "Testing release ${RELEASE} with log level"
-            }
-    }
-        
-    stage ('Deploy') {
-            // Provide input block which will prompt to take input from user manually.
-            input {
-                message 'Deploy?'
-                ok 'Do it !'
-                Abort 'cancel'
-                parameters {
-                    string (name: 'TARGET_ENVIRONMENT', defaultValue: 'PROD', description: 'Target environment deployment')
+        stage('Build') {
+            environment {
+                LOG_LEVEL='INFO'
+                }
+            parallel {
+                stage('Linux-A') {
+                    agent any
+                    steps{
+                        echo "Building release ${RELEASE} for ${STAGE_NAME} with log level ${LOG_LEVEL}"
+                        sh 'sleep 10'
                     }
                 }
-            steps{
-                echo "Deploying relase ${RELEASE}, to target environment ${TARGET_ENVIRONMENT}."
+                stage('Linux-B'){
+                    agent any
+                    steps{
+                        echo " Building release ${RELEASE} for ${STAGE_NAME} for log level ${LOG_LEVEL} "
+                        }
+
+                }
+                stage ('Linux-AB') {
+                    agent any
+                    steps {
+                        echo " Building release ${RELEASE} for ${STAGE_NAME}"
+                        sh 'sleep 10'
+                    }
+                }
+
             }
-
         }
-
+        stage('Test') {
+            steps{
+                echo " Testing release ${RELEASE}.."
+            }
+        }
     }
 }
-        
